@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HelpDesk | Sistema de Chamados</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon">H</div>
+      <div>
+        <strong>HelpDesk</strong>
+        <span>Suporte Técnico</span>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-item active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+      <button class="nav-item" data-page="novo">＋ <span>Novo chamado</span></button>
+      <button class="nav-item" data-page="chamados">☷ <span>Meus chamados</span></button>
+      <button class="nav-item" data-page="historico">◷ <span>Histórico</span></button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item">⚙ <span>Configurações</span></button>
+      <button class="nav-item">⇥ <span>Sair</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle">Acompanhe suas solicitações de suporte.</p>
+      </div>
+      <div class="user">
+        <div class="avatar">HD</div>
+        <div class="user-text">
+          <strong>Helen</strong>
+          <span>Solicitante</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="page active" id="dashboard">
+      <div class="welcome">
+        <div>
+          <span class="eyebrow">VISÃO GERAL</span>
+          <h2>Olá! Como podemos ajudar?</h2>
+          <p>Abra um chamado ou acompanhe o andamento das suas solicitações.</p>
+        </div>
+        <button class="primary-btn" data-go="novo">＋ Abrir novo chamado</button>
+      </div>
+
+      <div class="cards">
+        <article class="stat-card">
+          <div>
+            <span>Chamados abertos</span>
+            <strong id="countAbertos">2</strong>
+          </div>
+          <div class="stat-icon">!</div>
+        </article>
+        <article class="stat-card">
+          <div>
+            <span>Em atendimento</span>
+            <strong id="countAtendimento">1</strong>
+          </div>
+          <div class="stat-icon">↻</div>
+        </article>
+        <article class="stat-card">
+          <div>
+            <span>Concluídos</span>
+            <strong id="countConcluidos">3</strong>
+          </div>
+          <div class="stat-icon">✓</div>
+        </article>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Chamados recentes</h3>
+            <p>Acompanhe as últimas solicitações registradas.</p>
+          </div>
+          <button class="text-btn" data-go="chamados">Ver todos</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Assunto</th>
+                <th>Categoria</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="recentTickets"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="novo">
+      <div class="panel form-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Abrir novo chamado</h3>
+            <p>Descreva o problema com o máximo de informações possível.</p>
+          </div>
+        </div>
+
+        <form id="ticketForm">
+          <div class="form-grid">
+            <label class="field full">
+              <span>Título do chamado *</span>
+              <input id="titulo" required placeholder="Ex.: Impressora do financeiro não imprime">
+            </label>
+
+            <label class="field">
+              <span>Categoria *</span>
+              <select id="categoria" required>
+                <option value="">Selecione</option>
+                <option>Hardware</option>
+                <option>Software</option>
+                <option>Rede / Internet</option>
+                <option>Sistemas</option>
+                <option>Acesso / Senha</option>
+                <option>Outros</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Prioridade *</span>
+              <select id="prioridade" required>
+                <option value="">Selecione</option>
+                <option>Baixa</option>
+                <option>Média</option>
+                <option>Alta</option>
+                <option>Crítica</option>
+              </select>
+            </label>
+
+            <label class="field full">
+              <span>Local do incidente</span>
+              <input id="local" placeholder="Ex.: Sala 204 / Setor Financeiro">
+            </label>
+
+            <label class="field full">
+              <span>Descrição do problema *</span>
+              <textarea id="descricao" required rows="6" placeholder="Informe quando começou, mensagens de erro e o que você já tentou fazer."></textarea>
+            </label>
+
+            <label class="field full">
+              <span>Anexo</span>
+              <input id="anexo" type="file">
+              <small>Você pode anexar uma imagem, documento ou captura de tela.</small>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="reset" class="secondary-btn">Limpar</button>
+            <button type="submit" class="primary-btn">Enviar chamado</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="page" id="chamados">
+      <div class="panel">
+        <div class="panel-header tickets-head">
+          <div>
+            <h3>Meus chamados</h3>
+            <p>Consulte e acompanhe suas solicitações.</p>
+          </div>
+          <div class="filters">
+            <input type="search" id="searchInput" placeholder="Buscar chamado...">
+            <select id="statusFilter">
+              <option value="Todos">Todos os status</option>
+              <option>Aberto</option>
+              <option>Em Atendimento</option>
+              <option>Concluído</option>
+            </select>
+          </div>
+        </div>
+        <div id="ticketList" class="ticket-list"></div>
+      </div>
+    </section>
+
+    <section class="page" id="historico">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Histórico de atendimentos</h3>
+            <p>Registros concluídos e informações para consultas futuras.</p>
+          </div>
+        </div>
+        <div id="historyList" class="timeline"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">Chamado aberto com sucesso!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
