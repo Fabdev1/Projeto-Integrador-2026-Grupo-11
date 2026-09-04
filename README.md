@@ -13,14 +13,14 @@ Prova de conceito do percurso completo de um chamado de suporte: abertura pelo s
 |---|---|---|
 | Tainá Monique | | Modelagem PostgreSQL, script DDL, entidades JPA e estrutura base do backend |
 | Helen | | Interface do HelpDesk: telas, layout e estilos |
-| *(preencher)* | | |
-| *(preencher)* | | Integração frontend e backend, tratamento de erros, auditoria de status, conversa, avaliação, ambiente Docker e documentação |
+| Agatha Amorim | | Integração frontend e backend, tratamento de erros, auditoria de status, conversa, avaliação, ambiente Docker e documentação |
+
 
 > Complete os nomes e os usuários do GitHub antes de enviar. A rubrica exige o README preenchido com os integrantes, e todos precisam aparecer na aba Insights > Contributors.
 
 ## Vídeo de apresentação
 
-`(cole aqui o link do YouTube ou o caminho do MP4 no repositório)`
+
 
 ---
 
