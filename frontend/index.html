@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HelpDesk | Sistema de Chamados</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-integracao.css">
 </head>
 <body>
   <aside class="sidebar" id="sidebar">
@@ -36,14 +37,23 @@
         <h1 id="pageTitle">Dashboard</h1>
         <p id="pageSubtitle">Acompanhe suas solicitações de suporte.</p>
       </div>
+
+      <!--
+        A prova de conceito não implementa login (ver docs/01-prova-de-conceito.md).
+        O seletor abaixo troca o usuário ativo, o que permite demonstrar os dois
+        perfis operando o mesmo chamado sem sair da tela.
+      -->
       <div class="user">
-        <div class="avatar">HD</div>
-        <div class="user-text">
-          <strong>Helen</strong>
-          <span>Solicitante</span>
+        <div class="avatar" id="avatarUsuario">--</div>
+        <div class="user-text seletor-usuario">
+          <label class="visually-hidden" for="usuarioAtual">Usuário ativo</label>
+          <select id="usuarioAtual"></select>
+          <span id="perfilUsuario">Carregando...</span>
         </div>
       </div>
     </header>
+
+    <p class="aviso-conexao" id="avisoConexao" role="alert" hidden></p>
 
     <section class="page active" id="dashboard">
       <div class="welcome">
@@ -59,21 +69,21 @@
         <article class="stat-card">
           <div>
             <span>Chamados abertos</span>
-            <strong id="countAbertos">2</strong>
+            <strong id="countAbertos">0</strong>
           </div>
           <div class="stat-icon">!</div>
         </article>
         <article class="stat-card">
           <div>
             <span>Em atendimento</span>
-            <strong id="countAtendimento">1</strong>
+            <strong id="countAtendimento">0</strong>
           </div>
           <div class="stat-icon">↻</div>
         </article>
         <article class="stat-card">
           <div>
             <span>Concluídos</span>
-            <strong id="countConcluidos">3</strong>
+            <strong id="countConcluidos">0</strong>
           </div>
           <div class="stat-icon">✓</div>
         </article>
@@ -83,7 +93,7 @@
         <div class="panel-header">
           <div>
             <h3>Chamados recentes</h3>
-            <p>Acompanhe as últimas solicitações registradas.</p>
+            <p>Clique em uma linha para ver a linha do tempo completa.</p>
           </div>
           <button class="text-btn" data-go="chamados">Ver todos</button>
         </div>
@@ -118,53 +128,40 @@
           <div class="form-grid">
             <label class="field full">
               <span>Título do chamado *</span>
-              <input id="titulo" required placeholder="Ex.: Impressora do financeiro não imprime">
+              <input id="titulo" required maxlength="200"
+                     placeholder="Ex.: Impressora do financeiro não imprime">
             </label>
 
+            <!-- Alimentado por GET /api/categorias: o value é o id real da tabela. -->
             <label class="field">
               <span>Categoria *</span>
               <select id="categoria" required>
-                <option value="">Selecione</option>
-                <option>Hardware</option>
-                <option>Software</option>
-                <option>Rede / Internet</option>
-                <option>Sistemas</option>
-                <option>Acesso / Senha</option>
-                <option>Outros</option>
+                <option value="">Carregando...</option>
               </select>
             </label>
 
+            <!-- Os values são os do enum PrioridadeChamado, e os rótulos são os da tela. -->
             <label class="field">
               <span>Prioridade *</span>
               <select id="prioridade" required>
                 <option value="">Selecione</option>
-                <option>Baixa</option>
-                <option>Média</option>
-                <option>Alta</option>
-                <option>Crítica</option>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA">Média</option>
+                <option value="ALTA">Alta</option>
+                <option value="URGENTE">Crítica</option>
               </select>
             </label>
 
             <label class="field full">
-              <span>Local do incidente</span>
-              <input id="local" placeholder="Ex.: Sala 204 / Setor Financeiro">
-            </label>
-
-            <label class="field full">
               <span>Descrição do problema *</span>
-              <textarea id="descricao" required rows="6" placeholder="Informe quando começou, mensagens de erro e o que você já tentou fazer."></textarea>
-            </label>
-
-            <label class="field full">
-              <span>Anexo</span>
-              <input id="anexo" type="file">
-              <small>Você pode anexar uma imagem, documento ou captura de tela.</small>
+              <textarea id="descricao" required rows="6"
+                        placeholder="Informe quando começou, mensagens de erro e o que você já tentou fazer."></textarea>
             </label>
           </div>
 
           <div class="form-actions">
             <button type="reset" class="secondary-btn">Limpar</button>
-            <button type="submit" class="primary-btn">Enviar chamado</button>
+            <button type="submit" class="primary-btn" id="btnEnviarChamado">Enviar chamado</button>
           </div>
         </form>
       </div>
@@ -174,16 +171,18 @@
       <div class="panel">
         <div class="panel-header tickets-head">
           <div>
-            <h3>Meus chamados</h3>
-            <p>Consulte e acompanhe suas solicitações.</p>
+            <h3 id="tituloLista">Meus chamados</h3>
+            <p>Consulte e acompanhe as solicitações.</p>
           </div>
           <div class="filters">
             <input type="search" id="searchInput" placeholder="Buscar chamado...">
             <select id="statusFilter">
               <option value="Todos">Todos os status</option>
-              <option>Aberto</option>
-              <option>Em Atendimento</option>
-              <option>Concluído</option>
+              <option value="ABERTO">Aberto</option>
+              <option value="EM_ANDAMENTO">Em Atendimento</option>
+              <option value="RESOLVIDO">Resolvido</option>
+              <option value="FECHADO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
             </select>
           </div>
         </div>
@@ -204,8 +203,22 @@
     </section>
   </main>
 
-  <div class="toast" id="toast">Chamado aberto com sucesso!</div>
+  <!-- Detalhes do chamado: linha do tempo, conversa, ações e avaliação -->
+  <div class="modal-fundo" id="modalDetalhe" role="dialog" aria-modal="true"
+       aria-labelledby="modalTitulo" hidden>
+    <div class="modal">
+      <div class="modal-topo">
+        <h3 id="modalTitulo">Chamado</h3>
+        <button class="fechar-modal" id="fecharModal" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-corpo" id="modalCorpo"></div>
+    </div>
+  </div>
 
-  <script src="script.js"></script>
+  <div class="toast" id="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dominio.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,178 @@
+### =========================================================================
+### Sistema de Chamados - roteiro de teste da API
+###
+### Rode de cima para baixo com o banco recém-carregado. Os quatro ultimos
+### blocos provam os criterios de aceite 5 e 6 da prova de conceito: erro
+### tratado em vez de exceção crua.
+###
+### Como usar:
+###   VS Code, extensao REST Client: clique em "Send Request" acima de cada bloco.
+###   IntelliJ IDEA: o proprio editor reconhece arquivos .http.
+###   Terminal: os comandos curl equivalentes estao ao final.
+### =========================================================================
+
+@host = http://localhost:8080/api
+@solicitante = 1
+@tecnico = 2
+
+### 1. Categorias disponiveis (alimenta o select do formulario)
+GET {{host}}/categorias
+
+### 2. Usuarios cadastrados
+GET {{host}}/usuarios
+
+### 3. So os tecnicos
+GET {{host}}/usuarios?perfil=TECNICO
+
+### 4. Contadores do painel
+GET {{host}}/chamados/resumo
+
+### 5. Abrir um chamado
+# Esperado: 201, e uma linha nova em chamados e outra em historico_status
+POST {{host}}/chamados
+Content-Type: application/json
+
+{
+  "titulo": "Monitor da recepcao sem sinal",
+  "descricao": "O monitor liga mas fica com a tela preta. Ja testamos outro cabo HDMI.",
+  "categoriaId": 1,
+  "solicitanteId": {{solicitante}},
+  "prioridade": "ALTA"
+}
+
+### 6. Listar todos
+GET {{host}}/chamados
+
+### 7. Listar so os abertos
+GET {{host}}/chamados?status=ABERTO
+
+### 8. Listar os chamados de um solicitante
+GET {{host}}/chamados?solicitanteId={{solicitante}}
+
+### 9. Tecnico assume o chamado 6
+# Esperado: status vai para EM_ANDAMENTO e o historico ganha o segundo evento
+PUT {{host}}/chamados/6/tecnico/{{tecnico}}
+
+### 10. Mensagem do tecnico no chamado
+POST {{host}}/chamados/6/comentarios
+Content-Type: application/json
+
+{
+  "usuarioId": {{tecnico}},
+  "mensagem": "Vou passar na recepcao ainda hoje para testar a placa de video."
+}
+
+### 11. Resposta do solicitante
+POST {{host}}/chamados/6/comentarios
+Content-Type: application/json
+
+{
+  "usuarioId": {{solicitante}},
+  "mensagem": "Combinado, obrigado."
+}
+
+### 12. Tecnico marca como resolvido
+PUT {{host}}/chamados/6/status
+Content-Type: application/json
+
+{
+  "statusNovo": "RESOLVIDO",
+  "usuarioId": {{tecnico}},
+  "comentario": "Placa de video substituida e monitor testado."
+}
+
+### 13. Solicitante avalia
+# Esperado: 201, e o chamado passa para FECHADO automaticamente
+POST {{host}}/chamados/6/avaliacao
+Content-Type: application/json
+
+{
+  "usuarioId": {{solicitante}},
+  "nota": 5,
+  "comentario": "Resolvido no mesmo dia."
+}
+
+### 14. Detalhe completo: chamado, historico, conversa e avaliacao
+GET {{host}}/chamados/6/detalhes
+
+### 15. Notificacoes do solicitante
+GET {{host}}/notificacoes?usuarioId={{solicitante}}
+
+### 16. Nao lidas
+GET {{host}}/notificacoes/nao-lidas?usuarioId={{solicitante}}
+
+
+### =========================================================================
+### Erros esperados (nao sao bugs, sao os criterios de aceite 5 e 6)
+### =========================================================================
+
+### 17. Avaliar duas vezes o mesmo chamado
+# Esperado: 409, "Este chamado ja foi avaliado."
+POST {{host}}/chamados/6/avaliacao
+Content-Type: application/json
+
+{
+  "usuarioId": {{solicitante}},
+  "nota": 4
+}
+
+### 18. Avaliar um chamado que ainda esta aberto
+# Esperado: 409, "So e possivel avaliar um chamado resolvido."
+POST {{host}}/chamados/3/avaliacao
+Content-Type: application/json
+
+{
+  "usuarioId": {{solicitante}},
+  "nota": 5
+}
+
+### 19. Chamado que nao existe
+# Esperado: 404, e nao 500 com stack trace
+GET {{host}}/chamados/9999
+
+### 20. Abrir chamado sem titulo e sem categoria
+# Esperado: 400 com o campo "campos" preenchido
+POST {{host}}/chamados
+Content-Type: application/json
+
+{
+  "descricao": "Faltando os obrigatorios",
+  "solicitanteId": {{solicitante}}
+}
+
+### 21. Nota fora da faixa de 1 a 5
+# Esperado: 400, "A nota vai de 1 a 5"
+POST {{host}}/chamados/6/avaliacao
+Content-Type: application/json
+
+{
+  "usuarioId": {{solicitante}},
+  "nota": 9
+}
+
+### 22. Colocar em andamento sem tecnico atribuido
+# Esperado: 409, "Atribua um tecnico antes..."
+PUT {{host}}/chamados/2/status
+Content-Type: application/json
+
+{
+  "statusNovo": "EM_ANDAMENTO",
+  "usuarioId": {{tecnico}}
+}
+
+
+### =========================================================================
+### Equivalentes em curl
+### =========================================================================
+#
+# curl http://localhost:8080/api/categorias
+#
+# curl -X POST http://localhost:8080/api/chamados \
+#   -H "Content-Type: application/json" \
+#   -d '{"titulo":"Teste","descricao":"...","categoriaId":1,"solicitanteId":1,"prioridade":"ALTA"}'
+#
+# curl -X PUT http://localhost:8080/api/chamados/6/status \
+#   -H "Content-Type: application/json" \
+#   -d '{"statusNovo":"RESOLVIDO","usuarioId":2}'
+#
+# curl -i http://localhost:8080/api/chamados/9999
