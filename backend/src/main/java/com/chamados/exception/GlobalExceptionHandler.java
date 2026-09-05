@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,10 +48,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ErroResposta.deValidacao(req.getRequestURI(), campos));
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
+    @ExceptionHandler({
+            IllegalArgumentException.class,
+            MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class
+    })
     public ResponseEntity<ErroResposta> tratarArgumentoInvalido(Exception ex, HttpServletRequest req) {
+        String mensagem = (ex instanceof HttpMessageNotReadableException)
+                ? "Corpo da requisicao invalido ou valor de campo/enum nao reconhecido."
+                : ex.getMessage();
         return ResponseEntity.badRequest().body(
-                ErroResposta.de(400, "Requisicao invalida", ex.getMessage(), req.getRequestURI()));
+                ErroResposta.de(400, "Requisicao invalida", mensagem, req.getRequestURI()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

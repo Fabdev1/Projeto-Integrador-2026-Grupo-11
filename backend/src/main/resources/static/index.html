@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HelpDesk | Sistema de Chamados</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-integracao.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon">H</div>
+      <div>
+        <strong>HelpDesk</strong>
+        <span>Suporte Técnico</span>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-item active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+      <button class="nav-item" data-page="novo">＋ <span>Novo chamado</span></button>
+      <button class="nav-item" data-page="chamados">☷ <span>Meus chamados</span></button>
+      <button class="nav-item" data-page="historico">◷ <span>Histórico</span></button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item">⚙ <span>Configurações</span></button>
+      <button class="nav-item">⇥ <span>Sair</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle">Acompanhe suas solicitações de suporte.</p>
+      </div>
+
+      <!--
+        A prova de conceito não implementa login (ver docs/01-prova-de-conceito.md).
+        O seletor abaixo troca o usuário ativo, o que permite demonstrar os dois
+        perfis operando o mesmo chamado sem sair da tela.
+      -->
+      <div class="user">
+        <div class="avatar" id="avatarUsuario">--</div>
+        <div class="user-text seletor-usuario">
+          <label class="visually-hidden" for="usuarioAtual">Usuário ativo</label>
+          <select id="usuarioAtual"></select>
+          <span id="perfilUsuario">Carregando...</span>
+        </div>
+      </div>
+    </header>
+
+    <p class="aviso-conexao" id="avisoConexao" role="alert" hidden></p>
+
+    <section class="page active" id="dashboard">
+      <div class="welcome">
+        <div>
+          <span class="eyebrow">VISÃO GERAL</span>
+          <h2>Olá! Como podemos ajudar?</h2>
+          <p>Abra um chamado ou acompanhe o andamento das suas solicitações.</p>
+        </div>
+        <button class="primary-btn" data-go="novo">＋ Abrir novo chamado</button>
+      </div>
+
+      <div class="cards">
+        <article class="stat-card">
+          <div>
+            <span>Chamados abertos</span>
+            <strong id="countAbertos">0</strong>
+          </div>
+          <div class="stat-icon">!</div>
+        </article>
+        <article class="stat-card">
+          <div>
+            <span>Em atendimento</span>
+            <strong id="countAtendimento">0</strong>
+          </div>
+          <div class="stat-icon">↻</div>
+        </article>
+        <article class="stat-card">
+          <div>
+            <span>Concluídos</span>
+            <strong id="countConcluidos">0</strong>
+          </div>
+          <div class="stat-icon">✓</div>
+        </article>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Chamados recentes</h3>
+            <p>Clique em uma linha para ver a linha do tempo completa.</p>
+          </div>
+          <button class="text-btn" data-go="chamados">Ver todos</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Assunto</th>
+                <th>Categoria</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="recentTickets"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="novo">
+      <div class="panel form-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Abrir novo chamado</h3>
+            <p>Descreva o problema com o máximo de informações possível.</p>
+          </div>
+        </div>
+
+        <form id="ticketForm">
+          <div class="form-grid">
+            <label class="field full">
+              <span>Título do chamado *</span>
+              <input id="titulo" required maxlength="200"
+                     placeholder="Ex.: Impressora do financeiro não imprime">
+            </label>
+
+            <!-- Alimentado por GET /api/categorias: o value é o id real da tabela. -->
+            <label class="field">
+              <span>Categoria *</span>
+              <select id="categoria" required>
+                <option value="">Carregando...</option>
+              </select>
+            </label>
+
+            <!-- Os values são os do enum PrioridadeChamado, e os rótulos são os da tela. -->
+            <label class="field">
+              <span>Prioridade *</span>
+              <select id="prioridade" required>
+                <option value="">Selecione</option>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA">Média</option>
+                <option value="ALTA">Alta</option>
+                <option value="URGENTE">Crítica</option>
+              </select>
+            </label>
+
+            <label class="field full">
+              <span>Descrição do problema *</span>
+              <textarea id="descricao" required rows="6"
+                        placeholder="Informe quando começou, mensagens de erro e o que você já tentou fazer."></textarea>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="reset" class="secondary-btn">Limpar</button>
+            <button type="submit" class="primary-btn" id="btnEnviarChamado">Enviar chamado</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="page" id="chamados">
+      <div class="panel">
+        <div class="panel-header tickets-head">
+          <div>
+            <h3 id="tituloLista">Meus chamados</h3>
+            <p>Consulte e acompanhe as solicitações.</p>
+          </div>
+          <div class="filters">
+            <input type="search" id="searchInput" placeholder="Buscar chamado...">
+            <select id="statusFilter">
+              <option value="Todos">Todos os status</option>
+              <option value="ABERTO">Aberto</option>
+              <option value="EM_ANDAMENTO">Em Atendimento</option>
+              <option value="RESOLVIDO">Resolvido</option>
+              <option value="FECHADO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div id="ticketList" class="ticket-list"></div>
+      </div>
+    </section>
+
+    <section class="page" id="historico">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Histórico de atendimentos</h3>
+            <p>Registros concluídos e informações para consultas futuras.</p>
+          </div>
+        </div>
+        <div id="historyList" class="timeline"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Detalhes do chamado: linha do tempo, conversa, ações e avaliação -->
+  <div class="modal-fundo" id="modalDetalhe" role="dialog" aria-modal="true"
+       aria-labelledby="modalTitulo" hidden>
+    <div class="modal">
+      <div class="modal-topo">
+        <h3 id="modalTitulo">Chamado</h3>
+        <button class="fechar-modal" id="fecharModal" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-corpo" id="modalCorpo"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dominio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

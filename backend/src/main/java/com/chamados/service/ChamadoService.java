@@ -247,11 +247,22 @@ public class ChamadoService {
             throw new RegraDeNegocioException(
                     "Chamado " + anterior.name().toLowerCase() + " nao muda mais de status.");
         }
+        if (novo == StatusChamado.FECHADO) {
+            throw new RegraDeNegocioException(
+                    "O fechamento do chamado deve ser realizado exclusivamente pela avaliacao do atendimento.");
+        }
+        if (novo == StatusChamado.ABERTO) {
+            throw new RegraDeNegocioException("O chamado nao pode regredir para o status aberto.");
+        }
         if (novo == StatusChamado.EM_ANDAMENTO && chamado.getTecnico() == null) {
             throw new RegraDeNegocioException("Atribua um tecnico antes de colocar o chamado em andamento.");
         }
         if (novo == StatusChamado.RESOLVIDO && anterior != StatusChamado.EM_ANDAMENTO) {
             throw new RegraDeNegocioException("So um chamado em andamento pode ser marcado como resolvido.");
+        }
+        if (anterior == StatusChamado.RESOLVIDO && novo != StatusChamado.EM_ANDAMENTO) {
+            throw new RegraDeNegocioException(
+                    "Um chamado resolvido so pode ser reaberto (voltando para em andamento) ou avaliado.");
         }
     }
 }
