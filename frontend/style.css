@@ -354,7 +354,7 @@ th {
 }
 
 .priority-alta,
-.priority-critica {
+.priority-urgente {
   background: var(--danger-bg);
   color: var(--danger);
 }
@@ -417,6 +417,18 @@ textarea {
 
 small {
   color: var(--muted);
+}
+
+.file-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.file-input span {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .form-actions {
@@ -525,10 +537,162 @@ small {
   opacity: 1;
 }
 
+.toast.error {
+  background: var(--danger);
+}
+
 .empty {
   padding: 30px;
   text-align: center;
   color: var(--muted);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+
+.modal-header {
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.modal-close {
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  padding: 4px 8px;
+}
+
+.modal-body {
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.modal-row .meta-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.modal-row p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.anexos-list,
+.comentarios-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.anexos-list a {
+  color: var(--primary);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.anexos-list a:hover {
+  text-decoration: underline;
+}
+
+.comentario-item {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.comentario-item strong {
+  font-size: 13px;
+}
+
+.comentario-data {
+  color: var(--muted);
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+.comentario-item p {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.comentario-form,
+.avaliacao-form {
+  display: grid;
+  gap: 10px;
+}
+
+.comentario-form textarea,
+.avaliacao-form textarea {
+  resize: vertical;
+}
+
+.comentario-form button,
+.avaliacao-form button {
+  justify-self: end;
+}
+
+.stars-input {
+  display: flex;
+  gap: 4px;
+}
+
+.star-btn {
+  border: 0;
+  background: transparent;
+  font-size: 26px;
+  line-height: 1;
+  color: #f59e0b;
+  padding: 0;
+}
+
+.avaliacao-existente .stars {
+  font-size: 20px;
+  color: #f59e0b;
+}
+
+.avaliacao-existente p {
+  margin: 6px 0 0;
+  font-size: 13px;
 }
 
 @media (max-width: 900px) {

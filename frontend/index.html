@@ -24,7 +24,6 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="nav-item">⚙ <span>Configurações</span></button>
       <button class="nav-item">⇥ <span>Sair</span></button>
     </div>
   </aside>
@@ -125,12 +124,6 @@
               <span>Categoria *</span>
               <select id="categoria" required>
                 <option value="">Selecione</option>
-                <option>Hardware</option>
-                <option>Software</option>
-                <option>Rede / Internet</option>
-                <option>Sistemas</option>
-                <option>Acesso / Senha</option>
-                <option>Outros</option>
               </select>
             </label>
 
@@ -138,10 +131,10 @@
               <span>Prioridade *</span>
               <select id="prioridade" required>
                 <option value="">Selecione</option>
-                <option>Baixa</option>
-                <option>Média</option>
-                <option>Alta</option>
-                <option>Crítica</option>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA">Média</option>
+                <option value="ALTA">Alta</option>
+                <option value="URGENTE">Urgente</option>
               </select>
             </label>
 
@@ -157,7 +150,11 @@
 
             <label class="field full">
               <span>Anexo</span>
-              <input id="anexo" type="file">
+              <div class="file-input">
+                <button type="button" class="secondary-btn" id="anexoBtn">Escolher arquivo</button>
+                <span id="anexoNome">Nenhum arquivo escolhido</span>
+                <input id="anexo" type="file" hidden>
+              </div>
               <small>Você pode anexar uma imagem, documento ou captura de tela.</small>
             </label>
           </div>
@@ -204,7 +201,63 @@
     </section>
   </main>
 
-  <div class="toast" id="toast">Chamado aberto com sucesso!</div>
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h3 id="modalTitle"></h3>
+        <button class="modal-close" id="modalClose" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-row">
+          <span class="meta-label">ID</span>
+          <strong id="modalId"></strong>
+        </div>
+        <div class="modal-grid">
+          <div>
+            <span class="meta-label">Categoria</span>
+            <strong id="modalCategoria"></strong>
+          </div>
+          <div>
+            <span class="meta-label">Prioridade</span>
+            <span id="modalPrioridade"></span>
+          </div>
+          <div>
+            <span class="meta-label">Status</span>
+            <span id="modalStatus"></span>
+          </div>
+          <div>
+            <span class="meta-label">Data</span>
+            <strong id="modalData"></strong>
+          </div>
+        </div>
+        <div class="modal-row">
+          <span class="meta-label">Descrição</span>
+          <p id="modalDescricao"></p>
+        </div>
+
+        <div class="modal-row" id="modalAvaliacao" hidden>
+          <span class="meta-label">Avaliação</span>
+          <div id="modalAvaliacaoConteudo"></div>
+        </div>
+
+        <div class="modal-row">
+          <span class="meta-label">Anexos</span>
+          <div id="modalAnexos" class="anexos-list"></div>
+        </div>
+
+        <div class="modal-row">
+          <span class="meta-label">Comentários</span>
+          <div id="modalComentarios" class="comentarios-list"></div>
+          <form id="comentarioForm" class="comentario-form">
+            <textarea id="comentarioTexto" rows="2" placeholder="Escreva um comentário..." required></textarea>
+            <button type="submit" class="secondary-btn">Comentar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
