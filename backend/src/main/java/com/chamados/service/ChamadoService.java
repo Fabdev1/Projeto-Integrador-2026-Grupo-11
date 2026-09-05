@@ -2,19 +2,20 @@ package com.chamados.service;
 
 import com.chamados.domain.entity.Categoria;
 import com.chamados.domain.entity.Chamado;
+import com.chamados.domain.entity.HistoricoStatus;
 import com.chamados.domain.entity.Usuario;
 import com.chamados.domain.enums.StatusChamado;
 import com.chamados.dto.ChamadoRequestDTO;
 import com.chamados.dto.ChamadoResponseDTO;
 import com.chamados.repository.CategoriaRepository;
 import com.chamados.repository.ChamadoRepository;
+import com.chamados.repository.HistoricoStatusRepository;
 import com.chamados.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ChamadoService {
@@ -27,6 +28,9 @@ public class ChamadoService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private HistoricoStatusRepository historicoStatusRepository;
 
     @Transactional
     public ChamadoResponseDTO criarChamado(ChamadoRequestDTO dto) {
@@ -50,10 +54,12 @@ public class ChamadoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChamadoResponseDTO> listarTodos() {
-        return chamadoRepository.findAll().stream()
-                .map(ChamadoResponseDTO::new)
-                .collect(Collectors.toList());
+    public Page<ChamadoResponseDTO> listarTodos(Long solicitanteId, Pageable pageable) {
+        Page<Chamado> chamados = solicitanteId != null
+                ? chamadoRepository.findBySolicitanteId(solicitanteId, pageable)
+                : chamadoRepository.findAll(pageable);
+
+        return chamados.map(ChamadoResponseDTO::new);
     }
 
     @Transactional(readOnly = true)
@@ -64,12 +70,25 @@ public class ChamadoService {
     }
 
     @Transactional
-    public ChamadoResponseDTO alterarStatus(Long id, StatusChamado novoStatus) {
+    public ChamadoResponseDTO alterarStatus(Long id, StatusChamado novoStatus, Long alteradoPorId) {
         Chamado chamado = chamadoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado com ID: " + id));
 
+        Usuario alteradoPor = usuarioRepository.findById(alteradoPorId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + alteradoPorId));
+
+        StatusChamado statusAnterior = chamado.getStatus();
         chamado.setStatus(novoStatus);
         chamado = chamadoRepository.save(chamado);
+
+        HistoricoStatus historico = HistoricoStatus.builder()
+                .chamado(chamado)
+                .alteradoPor(alteradoPor)
+                .statusAnterior(statusAnterior)
+                .statusNovo(novoStatus)
+                .build();
+        historicoStatusRepository.save(historico);
+
         return new ChamadoResponseDTO(chamado);
     }
 
