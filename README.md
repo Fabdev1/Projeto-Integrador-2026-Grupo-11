@@ -14,10 +14,9 @@ Prova de conceito do percurso completo de um chamado de suporte: abertura pelo s
 | Tainá Monique | | Modelagem PostgreSQL, script DDL, entidades JPA e estrutura base do backend |
 | Helen | | Interface do HelpDesk: telas, layout e estilos |
 | Agatha Amorim | | Integração frontend e backend, tratamento de erros, auditoria de status, conversa, avaliação, ambiente Docker e documentação |
+| Luan Oliveira | Integração frontend e backend, tratamento de erros, auditoria de status,  ambiente Docker e documentação |
 | Fabricio Lima | | Testes de Segurança da Informação, análise da aplicação para identificação de vulnerabilidades, validação de autenticação e autorização, controle de acesso, proteção de dados e tratamento de requisições indevidas.
  |
-
-> Complete os nomes e os usuários do GitHub antes de enviar. A rubrica exige o README preenchido com os integrantes, e todos precisam aparecer na aba Insights > Contributors.
 
 ## Vídeo de apresentação
 
@@ -175,3 +174,42 @@ docker compose exec postgres psql -U postgres -d chamados_db \
 ```
 
 Os dois números precisam bater.
+## Capturas de tela
+
+### Interface
+
+Dashboard do solicitante, com os contadores calculados no backend:
+
+![Dashboard do solicitante](docs/imagens/01-dashboard-solicitante.png)
+
+Fila de atendimento do técnico, com filtro por status:
+
+![Fila de atendimento](docs/imagens/02-fila-tecnico.png)
+
+Modal de detalhes do chamado, com linha do tempo e conversa:
+
+![Detalhes do chamado](docs/imagens/03-modal-detalhes.png)
+
+Abertura de um novo chamado:
+
+![Novo chamado](docs/imagens/04-novo-chamado.png)
+
+### Banco de dados
+
+Tabelas criadas no banco (console H2):
+
+![Tabelas do banco](docs/imagens/05-banco-tabelas.png)
+
+Consulta retornando os chamados cadastrados:
+
+![Consulta no banco](docs/imagens/06-banco-consulta.png)
+
+### Código
+
+Regras de transição de status do chamado (máquina de estados):
+
+![Regras de negócio](docs/imagens/07-codigo-regras-negocio.png)
+
+Correção aplicada nesta etapa, isolando as variáveis do `dominio.js` para não colidir com as do `app.js`:
+
+![Correção de colisão de variáveis](docs/imagens/08-codigo-correcao-dominio.png)
