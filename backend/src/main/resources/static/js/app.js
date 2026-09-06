@@ -7,7 +7,6 @@
  */
 
 const {
-  STATUS,
   PRIORIDADE,
   PERFIL,
   CONCLUIDOS,
@@ -459,7 +458,7 @@ function blocoAcoes(chamado) {
 
   if (
     ehTecnico() &&
-    !["FECHADO", "CANCELADO"].includes(chamado.status)
+    ["ABERTO", "EM_ANDAMENTO"].includes(chamado.status)
   ) {
     acoes.push('<button class="secondary-btn" id="btnCancelar">Cancelar chamado</button>');
   }

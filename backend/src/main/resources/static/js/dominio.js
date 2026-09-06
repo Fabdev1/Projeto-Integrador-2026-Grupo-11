@@ -8,6 +8,7 @@
  * ser reescrito.
  */
 
+(function () {
 const STATUS = {
   ABERTO: { rotulo: "Aberto", classe: "status-aberto" },
   EM_ANDAMENTO: { rotulo: "Em Atendimento", classe: "status-em-atendimento" },
@@ -99,3 +100,4 @@ window.Dominio = {
   escapar,
   estrelas,
 };
+})();
