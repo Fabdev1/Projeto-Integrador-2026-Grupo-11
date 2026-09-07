@@ -15,13 +15,12 @@ Prova de conceito do percurso completo de um chamado de suporte: abertura pelo s
 | Helen | | Interface do HelpDesk: telas, layout e estilos |
 | Agatha Amorim | | Integração frontend e backend, tratamento de erros, auditoria de status, conversa, avaliação, ambiente Docker e documentação |
 | Luan Oliveira | Integração frontend e backend, tratamento de erros, auditoria de status,  ambiente Docker e documentação |
-| Fabricio Lima | | Testes de Segurança da Informação, análise da aplicação para identificação de vulnerabilidades, validação de autenticação e autorização, controle de acesso, proteção de dados e tratamento de requisições indevidas.
- |
- | Edijones Lima | | Vídeo de apresentação, validação da Prova de Conceito e documentação |
+| Fabricio Lima | | Testes de Segurança da Informação, análise da aplicação para identificação de vulnerabilidades, validação de autenticação e autorização, controle de acesso, proteção de dados e tratamento de requisições indevidas. |
+| Edijones Lima | | Vídeo de apresentação, validação da Prova de Conceito e documentação |
 
 ## Vídeo de apresentação
 
-![Vídeo de apresentação](docs/video/01-apresentacao.mp4)
+[Vídeo de apresentação](docs/video/01-apresentacao.mp4)
 
 ---
 
